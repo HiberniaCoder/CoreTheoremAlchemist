@@ -10,29 +10,37 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [message, setMessage] = useState<string | null>(null);
   const router = useRouter()
   const supabase = createClient()
 
-  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setError(null)
-    const { error } = await supabase.auth.signInWithPassword({
+    setMessage(null)
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${location.origin}/auth/callback`,
+      }
     })
 
     if (error) {
       setError(error.message)
-    } else {
-      router.push('/')
-      router.refresh()
+    } else if (data.user) {
+      if (data.user.identities?.length === 0) {
+        setError("This user already exists. Please sign in.");
+      } else {
+        setMessage('Check your email for the confirmation link!')
+      }
     }
   }
-
+  
   const handleGoogleLogin = async () => {
     setError(null)
     const { error } = await supabase.auth.signInWithOAuth({
@@ -54,11 +62,11 @@ export default function LoginPage() {
                 <BrainCircuit className="h-8 w-8 text-primary" />
                 <span className="font-bold font-headline text-2xl">ClarityBoard</span>
             </div>
-          <CardTitle>Welcome Back</CardTitle>
-          <CardDescription>Sign in to access your dashboard</CardDescription>
+          <CardTitle>Create an Account</CardTitle>
+          <CardDescription>Enter your details to get started</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4" onSubmit={handleSignIn}>
+          <form className="space-y-4" onSubmit={handleSignUp}>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -81,15 +89,16 @@ export default function LoginPage() {
               />
             </div>
             {error && <p className="text-destructive text-sm">{error}</p>}
+            {message && <p className="text-green-500 text-sm">{message}</p>}
             <Button type="submit" className="w-full">
-                Sign In
+                Sign Up
             </Button>
           </form>
 
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{' '}
-            <Link href="/signup" className="underline">
-              Sign up
+            Already have an account?{' '}
+            <Link href="/login" className="underline">
+              Sign in
             </Link>
           </div>
 

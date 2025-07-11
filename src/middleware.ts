@@ -58,9 +58,11 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user && !request.nextUrl.pathname.startsWith('/login')) {
+  const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/signup') || request.nextUrl.pathname.startsWith('/auth/callback')
+
+  if (!user && !isAuthRoute) {
     return NextResponse.redirect(new URL('/login', request.url))
-  } else if (user && request.nextUrl.pathname.startsWith('/login')) {
+  } else if (user && isAuthRoute && !request.nextUrl.pathname.startsWith('/auth/callback')) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
