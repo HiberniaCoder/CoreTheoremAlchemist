@@ -1,20 +1,26 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { SidebarProvider, Sidebar, SidebarInset } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/layout/app-sidebar';
-import { AppHeader } from '@/components/layout/app-header';
 import { Toaster } from '@/components/ui/toaster';
+import { createClient } from '@/lib/supabase/server';
+import { AppSidebar } from '@/components/layout/app-sidebar';
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import { AppHeader } from '@/components/layout/app-header';
 
 export const metadata: Metadata = {
   title: 'ClarityBoard',
   description: 'AI-Powered KPI Dashboard',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = createClient();
+  const { data: { session }} = await supabase.auth.getSession();
+  
+  const isLoggedIn = !!session;
+
   return (
     <html lang="en" className="dark">
       <head>
@@ -26,15 +32,19 @@ export default function RootLayout({
         ></link>
       </head>
       <body className="font-body antialiased">
-        <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-              <AppHeader />
-              <main className="flex-1 bg-background p-4 md:p-6 lg:p-8">
-                {children}
-              </main>
-            </SidebarInset>
-        </SidebarProvider>
+        {isLoggedIn ? (
+          <SidebarProvider>
+              <AppSidebar />
+              <SidebarInset>
+                <AppHeader />
+                <main className="flex-1 bg-background p-4 md:p-6 lg:p-8">
+                  {children}
+                </main>
+              </SidebarInset>
+          </SidebarProvider>
+        ) : (
+          <main>{children}</main>
+        )}
         <Toaster />
       </body>
     </html>
