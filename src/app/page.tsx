@@ -19,7 +19,6 @@ import {
 import { summarizeKpiTrends } from '@/ai/flows/summarize-kpi-trends';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 async function AiSummaryCard() {
   if (!process.env.GOOGLE_API_KEY) {

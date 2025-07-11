@@ -41,20 +41,13 @@ export async function signup(formData: FormData) {
   const { error } = await supabase.auth.signUp({
     email,
     password,
-    // Supabase sends a confirmation email by default.
-    // You can disable this in your Supabase project settings if you want to log in directly.
-    // options: {
-    //   emailRedirectTo: `${origin}/auth/callback`,
-    // },
   })
 
   if (error) {
     console.error("Sign up error:", error);
     return redirect('/signup?message=Could not authenticate user. Please try again.')
   }
-
-  // After sign up, Supabase automatically signs in the user with the new credentials if email confirmation is disabled.
-  // We just need to revalidate and redirect.
+  
   revalidatePath('/', 'layout')
   redirect('/')
 }

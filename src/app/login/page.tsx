@@ -15,14 +15,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
-export default async function LoginPage({ searchParams }: { searchParams: { message: string } }) {
-  const supabase = createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-
-  if (session) {
-    redirect('/');
-  }
-
+export default function LoginPage({ searchParams }: { searchParams: { message: string } }) {
+  
   const handleGoogleLogin = async () => {
     "use server"
     const supabase = createClient();
@@ -41,7 +35,10 @@ export default async function LoginPage({ searchParams }: { searchParams: { mess
       return redirect('/login?message=Could not authenticate with Google');
     }
     
-    return redirect(data.url);
+    if(data.url) {
+      return redirect(data.url);
+    }
+    return redirect('/login?message=Could not get google auth url');
   };
 
   return (

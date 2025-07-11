@@ -15,13 +15,7 @@ import { BrainCircuit, ChromeIcon } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-export default async function SignupPage({ searchParams }: { searchParams: { message: string } }) {
-  const supabase = createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-
-  if (session) {
-    redirect('/');
-  }
+export default function SignupPage({ searchParams }: { searchParams: { message: string } }) {
   
   const handleGoogleLogin = async () => {
     "use server"
@@ -41,7 +35,10 @@ export default async function SignupPage({ searchParams }: { searchParams: { mes
       return redirect('/signup?message=Could not authenticate with Google');
     }
     
-    return redirect(data.url);
+    if (data.url) {
+      return redirect(data.url);
+    }
+    return redirect('/login?message=Could not get google auth url');
   };
 
   return (
