@@ -7,14 +7,12 @@ import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
 import { BrainCircuit, ChromeIcon } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
   const supabase = createClient()
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -28,7 +26,7 @@ export default function LoginPage() {
     if (error) {
       setError(error.message)
     } else {
-      router.refresh()
+      window.location.href = '/'
     }
   }
 
