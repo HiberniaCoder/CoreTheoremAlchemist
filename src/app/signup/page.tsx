@@ -19,31 +19,22 @@ export default function SignupPage() {
     e.preventDefault();
     setError(null)
 
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
-    })
-
-    if (signUpError) {
-      setError(signUpError.message)
-      return;
-    }
-
-    if (signUpData.user?.identities?.length === 0) {
-        setError("This user already exists. Please sign in.");
-        return;
-    }
-    
-    // After a successful sign-up, sign in the user to create a session
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      options: {
+        // The callback route will handle the session and redirect
+        emailRedirectTo: `${location.origin}/auth/callback`,
+      }
     });
 
-    if (signInError) {
-        setError(signInError.message);
+    if (error) {
+      setError(error.message);
     } else {
-        window.location.href = '/';
+       // After sign-up, Supabase sends a confirmation email (if enabled).
+       // The user is then signed in, and we redirect to the callback handler.
+       // The callback handler will create the session and redirect to the dashboard.
+       window.location.href = '/auth/callback';
     }
   }
   

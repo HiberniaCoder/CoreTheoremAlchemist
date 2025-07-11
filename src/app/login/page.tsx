@@ -26,7 +26,9 @@ export default function LoginPage() {
     if (error) {
       setError(error.message)
     } else {
-      window.location.href = '/'
+      // On successful sign-in, the session is set.
+      // Redirect to the callback route to let the server handle the final redirect.
+      window.location.href = '/auth/callback'
     }
   }
 
