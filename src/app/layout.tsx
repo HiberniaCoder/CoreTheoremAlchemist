@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import { createClient } from '@/lib/supabase/server';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { AppHeader } from '@/components/layout/app-header';
@@ -16,11 +15,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const supabase = createClient();
-  const { data: { session }} = await supabase.auth.getSession();
   
-  const isLoggedIn = !!session;
-
   return (
     <html lang="en" className="dark">
       <head>
@@ -32,19 +27,15 @@ export default async function RootLayout({
         ></link>
       </head>
       <body className="font-body antialiased">
-        {isLoggedIn ? (
-          <SidebarProvider>
-              <AppSidebar />
-              <SidebarInset>
-                <AppHeader />
-                <main className="flex-1 bg-background p-4 md:p-6 lg:p-8">
-                  {children}
-                </main>
-              </SidebarInset>
-          </SidebarProvider>
-        ) : (
-          <main>{children}</main>
-        )}
+        <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+              <AppHeader />
+              <main className="flex-1 bg-background p-4 md:p-6 lg:p-8">
+                {children}
+              </main>
+            </SidebarInset>
+        </SidebarProvider>
         <Toaster />
       </body>
     </html>
