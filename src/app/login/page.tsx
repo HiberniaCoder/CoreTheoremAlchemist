@@ -28,7 +28,7 @@ export default function LoginPage() {
     if (error) {
       setError(error.message)
     } else {
-      router.push('/')
+      // Refresh the page to allow the middleware to redirect
       router.refresh()
     }
   }
