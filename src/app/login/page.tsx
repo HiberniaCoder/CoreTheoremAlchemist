@@ -28,8 +28,8 @@ export default function LoginPage() {
     if (error) {
       setError(error.message)
     } else {
-      // Refresh the page to allow the middleware to redirect
-      router.refresh()
+      // The auth callback will handle the redirect after the session is established.
+      router.push('/auth/callback')
     }
   }
 

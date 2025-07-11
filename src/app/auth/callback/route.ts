@@ -15,6 +15,15 @@ export async function GET(request: Request) {
     }
   }
 
+  // When logging in with email/password, there's no code.
+  // The session is already set in the cookies. We just need to redirect.
+  // The middleware will handle checking if the user is authenticated.
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) {
+    return NextResponse.redirect(`${origin}${next}`)
+  }
+
   // return the user to an error page with instructions
   return NextResponse.redirect(`${origin}/login?error=Could not authenticate user`)
 }
