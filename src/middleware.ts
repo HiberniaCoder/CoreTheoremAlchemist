@@ -55,22 +55,9 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // refreshing the session cookie
+  await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl;
-
-  // if user is not logged in and is trying to access a protected route
-  if (!user && pathname !== '/login' && pathname !== '/signup' && pathname !== '/auth/callback') {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-
-  // if user is logged in and is trying to access an auth route
-  if (user && (pathname === '/login' || pathname === '/signup')) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
-  
   return response;
 }
 
@@ -81,7 +68,10 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - auth (auth routes)
+     * - login (login page)
+     * - signup (signup page)
      */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico|auth|login|signup).*)',
   ],
 };
