@@ -15,6 +15,7 @@ import {
   BrainCircuit,
   Settings,
   PlusCircle,
+  Briefcase,
 } from "lucide-react"
 
 export function AppSidebar() {
@@ -23,6 +24,7 @@ export function AppSidebar() {
   const menuItems = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
     { href: "/analytics", label: "Analytics", icon: BarChart3 },
+    { href: "/projects", label: "Projects", icon: Briefcase },
     { href: "/predictions", label: "AI Prediction", icon: BrainCircuit },
   ]
 
