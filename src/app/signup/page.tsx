@@ -14,30 +14,38 @@ export default function SignupPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [message, setMessage] = useState<string | null>(null);
   const router = useRouter()
   const supabase = createClient()
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null)
-    setMessage(null)
-    const { data, error } = await supabase.auth.signUp({
+
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        emailRedirectTo: `${location.origin}/auth/callback`,
-      }
     })
 
-    if (error) {
-      setError(error.message)
-    } else if (data.user) {
-      if (data.user.identities?.length === 0) {
+    if (signUpError) {
+      setError(signUpError.message)
+      return;
+    }
+
+    if (signUpData.user?.identities?.length === 0) {
         setError("This user already exists. Please sign in.");
-      } else {
-        setMessage('Check your email for the confirmation link!')
-      }
+        return;
+    }
+    
+    // After a successful sign-up, sign in the user to create a session
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
+
+    if (signInError) {
+        setError(signInError.message);
+    } else {
+        router.refresh();
     }
   }
   
@@ -89,7 +97,6 @@ export default function SignupPage() {
               />
             </div>
             {error && <p className="text-destructive text-sm">{error}</p>}
-            {message && <p className="text-green-500 text-sm">{message}</p>}
             <Button type="submit" className="w-full">
                 Sign Up
             </Button>
