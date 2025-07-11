@@ -1,104 +1,99 @@
-'use client'
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { createClient } from '@/lib/supabase/client'
-import { BrainCircuit, ChromeIcon } from 'lucide-react'
-import Link from 'next/link'
-import { useState } from 'react'
+import { signup } from "@/app/auth/actions";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { createClient } from "@/lib/supabase/server";
+import { BrainCircuit, ChromeIcon } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
-export default function SignupPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const supabase = createClient()
+export default async function SignupPage({ searchParams }: { searchParams: { message: string } }) {
+  const supabase = createClient();
+  const { data: { session } } = await supabase.auth.getSession();
 
-  const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null)
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        // The callback route will handle the session and redirect
-        emailRedirectTo: `${location.origin}/auth/callback`,
-      }
-    });
-
-    if (error) {
-      setError(error.message);
-    } else {
-       // After sign-up, Supabase sends a confirmation email (if enabled).
-       // The user is then signed in, and we redirect to the callback handler.
-       // The callback handler will create the session and redirect to the dashboard.
-       window.location.href = '/auth/callback';
-    }
+  if (session) {
+    redirect('/');
   }
   
   const handleGoogleLogin = async () => {
-    setError(null)
-    const { error } = await supabase.auth.signInWithOAuth({
+    "use server"
+    const supabase = createClient();
+    const origin = process.env.NODE_ENV === 'production' 
+      ? 'https://your-production-url.com' // IMPORTANT: Replace with your production URL
+      : 'http://localhost:9002'; // Make sure this matches your local dev port
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${location.origin}/auth/callback`,
+        redirectTo: `${origin}/auth/callback`,
       },
-    })
+    });
+
     if (error) {
-        setError(error.message)
+      return redirect('/signup?message=Could not authenticate with Google');
     }
-  }
+    
+    return redirect(data.url);
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-            <div className="flex justify-center items-center gap-2 mb-4">
-                <BrainCircuit className="h-8 w-8 text-primary" />
-                <span className="font-bold font-headline text-2xl">ClarityBoard</span>
-            </div>
+          <div className="flex justify-center items-center gap-2 mb-4">
+            <BrainCircuit className="h-8 w-8 text-primary" />
+            <span className="font-bold font-headline text-2xl">
+              ClarityBoard
+            </span>
+          </div>
           <CardTitle>Create an Account</CardTitle>
-          <CardDescription>Enter your details to get started</CardDescription>
+          <CardDescription>
+            Enter your details to get started
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4" onSubmit={handleSignUp}>
+          <form className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
+                name="email"
                 placeholder="m@example.com"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input 
-                id="password" 
-                type="password" 
-                required 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+              <Input
+                id="password"
+                type="password"
+                name="password"
+                required
               />
             </div>
-            {error && <p className="text-destructive text-sm">{error}</p>}
-            <Button type="submit" className="w-full">
-                Sign Up
+            {searchParams.message && <p className="text-destructive text-sm">{searchParams.message}</p>}
+            <Button formAction={signup} className="w-full">
+              Sign Up
             </Button>
           </form>
 
           <div className="mt-4 text-center text-sm">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <Link href="/login" className="underline">
               Sign in
             </Link>
           </div>
 
-          <div className="relative my-4">
+           <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
             </div>
@@ -106,12 +101,14 @@ export default function SignupPage() {
                 <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
             </div>
            </div>
-           <Button variant="outline" className="w-full" onClick={handleGoogleLogin}>
-                <ChromeIcon className="mr-2 h-4 w-4" />
-                Google
-            </Button>
+           <form>
+             <Button variant="outline" className="w-full" formAction={handleGoogleLogin}>
+                  <ChromeIcon className="mr-2 h-4 w-4" />
+                  Google
+              </Button>
+            </form>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -1,3 +1,4 @@
+
 "use client"
 
 import { SidebarTrigger } from "@/components/ui/sidebar"
@@ -22,7 +23,7 @@ export function AppHeader() {
     const handleSignOut = async () => {
         await supabase.auth.signOut()
         router.push('/login')
-        router.refresh()
+        router.refresh() // This ensures the server state is updated
     }
 
   return (
