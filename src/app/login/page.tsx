@@ -16,8 +16,7 @@ export default function LoginPage() {
   const router = useRouter()
   const supabase = createClient()
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSignIn = async () => {
     setError(null)
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -32,19 +31,21 @@ export default function LoginPage() {
     }
   }
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSignUp = async () => {
     setError(null)
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     })
 
     if (error) {
       setError(error.message)
-    } else {
-      // You might want to show a message to check email for confirmation
-      alert('Check your email for the confirmation link!')
+    } else if (data.user) {
+      if (data.user.identities?.length === 0) {
+        setError("This user already exists. Please sign in.");
+      } else {
+        alert('Check your email for the confirmation link!')
+      }
     }
   }
   
@@ -60,6 +61,16 @@ export default function LoginPage() {
         setError(error.message)
     }
   }
+  
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const submitter = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement;
+    if (submitter.name === 'signin') {
+      handleSignIn();
+    } else if (submitter.name === 'signup') {
+      handleSignUp();
+    }
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
@@ -73,7 +84,7 @@ export default function LoginPage() {
           <CardDescription>Sign in to access your dashboard</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -97,10 +108,10 @@ export default function LoginPage() {
             </div>
             {error && <p className="text-destructive text-sm">{error}</p>}
             <div className="flex flex-col space-y-2">
-                <Button type="submit" className="w-full" onClick={handleSignIn}>
+                <Button type="submit" className="w-full" name="signin">
                     Sign In
                 </Button>
-                <Button type="button" variant="outline" className="w-full" onClick={handleSignUp}>
+                <Button type="submit" variant="outline" className="w-full" name="signup">
                     Sign Up
                 </Button>
             </div>
