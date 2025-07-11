@@ -45,70 +45,68 @@ export default async function SignupPage({ searchParams }: { searchParams: { mes
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader className="text-center">
-          <div className="flex justify-center items-center gap-2 mb-4">
-            <BrainCircuit className="h-8 w-8 text-primary" />
-            <span className="font-bold font-headline text-2xl">
-              ClarityBoard
-            </span>
+    <Card className="w-full max-w-sm">
+      <CardHeader className="text-center">
+        <div className="flex justify-center items-center gap-2 mb-4">
+          <BrainCircuit className="h-8 w-8 text-primary" />
+          <span className="font-bold font-headline text-2xl">
+            ClarityBoard
+          </span>
+        </div>
+        <CardTitle>Create an Account</CardTitle>
+        <CardDescription>
+          Enter your details to get started
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              name="email"
+              placeholder="m@example.com"
+              required
+            />
           </div>
-          <CardTitle>Create an Account</CardTitle>
-          <CardDescription>
-            Enter your details to get started
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                name="email"
-                placeholder="m@example.com"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                name="password"
-                required
-              />
-            </div>
-            {searchParams.message && <p className="text-destructive text-sm">{searchParams.message}</p>}
-            <Button formAction={signup} className="w-full">
-              Sign Up
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              name="password"
+              required
+            />
+          </div>
+          {searchParams.message && <p className="text-destructive text-sm">{searchParams.message}</p>}
+          <Button formAction={signup} className="w-full">
+            Sign Up
+          </Button>
+        </form>
+
+        <div className="mt-4 text-center text-sm">
+          Already have an account?{" "}
+          <Link href="/login" className="underline">
+            Sign in
+          </Link>
+        </div>
+
+          <div className="relative my-4">
+          <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+          </div>
+          </div>
+          <form>
+            <Button variant="outline" className="w-full" formAction={handleGoogleLogin}>
+                <ChromeIcon className="mr-2 h-4 w-4" />
+                Google
             </Button>
           </form>
-
-          <div className="mt-4 text-center text-sm">
-            Already have an account?{" "}
-            <Link href="/login" className="underline">
-              Sign in
-            </Link>
-          </div>
-
-           <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
-            </div>
-           </div>
-           <form>
-             <Button variant="outline" className="w-full" formAction={handleGoogleLogin}>
-                  <ChromeIcon className="mr-2 h-4 w-4" />
-                  Google
-              </Button>
-            </form>
-        </CardContent>
-      </Card>
-    </div>
+      </CardContent>
+    </Card>
   );
 }
