@@ -28,8 +28,7 @@ export default function LoginPage() {
     if (error) {
       setError(error.message)
     } else {
-      // The auth callback will handle the redirect after the session is established.
-      router.push('/auth/callback')
+      router.refresh()
     }
   }
 
