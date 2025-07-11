@@ -4,14 +4,12 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { createClient } from '@/lib/supabase/server';
 import { AuthenticatedLayout } from './layout-authenticated';
-import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'ClarityBoard',
   description: 'AI-Powered KPI Dashboard',
 };
 
-// This ensures that this layout is always dynamically rendered
 export const dynamic = 'force-dynamic';
 
 export default async function RootLayout({
@@ -23,22 +21,6 @@ export default async function RootLayout({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-
-  const isAuthPage = (pathname: string | null) => {
-    return pathname === '/login' || pathname === '/signup';
-  };
-  
-  // We need to get the pathname from the headers
-  const { headers } = await import('next/headers');
-  const pathname = headers().get('next-url');
-
-  if (!user && !isAuthPage(pathname)) {
-    redirect('/login');
-  }
-
-  if (user && isAuthPage(pathname)) {
-    redirect('/');
-  }
 
   return (
     <html lang="en" className="dark">
