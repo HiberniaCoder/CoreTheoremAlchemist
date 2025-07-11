@@ -1,6 +1,8 @@
+
 "use client"
 
 import { usePathname } from "next/navigation"
+import Link from "next/link"
 import {
   Sidebar,
   SidebarHeader,
@@ -45,10 +47,10 @@ export function AppSidebar() {
               isActive={pathname === item.href}
               tooltip={{ children: item.label, side: "right" }}
             >
-              <a href={item.href}>
+              <Link href={item.href}>
                 <item.icon />
                 <span>{item.label}</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}
@@ -61,10 +63,10 @@ export function AppSidebar() {
               disabled
               tooltip={{ children: item.label, side: "right" }}
             >
-              <a href={item.href}>
+              <Link href={item.href}>
                 <item.icon />
                 <span>{item.label}</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}
@@ -76,10 +78,10 @@ export function AppSidebar() {
               asChild
               tooltip={{ children: "Settings", side: "right" }}
             >
-              <a href="#">
+              <Link href="#">
                 <Settings />
                 <span>Settings</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
